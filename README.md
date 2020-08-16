@@ -2,7 +2,7 @@
 
 Let's start with a simple C code 👇
 
-```C
+```c
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
@@ -51,7 +51,7 @@ If you want two to place a space between two words but want to get them as only 
 
 Lets modify the program a bit 👇
 
-```C
+```c
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
@@ -127,3 +127,30 @@ So, this error occurs because the file is does not have executable options enabl
 
 After the shebang I wrote the path of the python compiler.
 So, that's it for python now let's understand that how the compiled C program work.
+
+## How CPU works 🛠🔧
+
+So, suppose you are writting some instructions in a paer from top to bottom. So, like your line will have line number in computers also we have some numbers to point to that instruction. So, instead of the lines as 1, 2, 3, 4.... they are stored in hexadecimal values. So, now the assembly language have 8-32 global variables of fixed size called **Registers**. So, as mentioned these registers are of fixed size that is either 32-bit or 64-bit.
+So, there are some important registers like 👇
+
+- Program Counter or Instructuin Pointer(IP) or EIP or RIP. So, this pointer will contain the nextinstruction we will be executing. You can cosider that it contains the line number we will be executing next. So, everytime one instruction is executedwe advance the IP or PC.
+
+Virtually all computations are expressed as simple operations on registers. Remember I wrote the values in hexadecimal. Like 👇
+
+```assembly
+mov eax, 0x5
+add eax, 0x4
+mov ebx, 0x2
+sub eax, ebx
+```
+
+Actually we cannot write a real program using only 32 1-byte variables.
+So, now if all the registers are filled up then we can store the next things in memory.
+And you can acess values from memory by using loads and stores at addresses, i.e just like arrays or using PUSH and POP operation. So, let's see the first option 👇
+
+```assembly
+mov eax, [14]
+```
+
+So, here the value is retrived from the memory location 14.
+Now stack is actually just like stacks we learned in programming. An amount of space or an array at the **bottom** of the memory. So, there is a special pointer called Stack Pointer or SP or ESP or RSP stores the value of the highest filled up point of the stack. So, as new elements are inserted into the stack the pointer moves up i.e decreases and as elements are removed the pointer again lowers or increase in value.
