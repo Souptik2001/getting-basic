@@ -154,3 +154,63 @@ mov eax, [14]
 
 So, here the value is retrived from the memory location 14.
 Now stack is actually just like stacks we learned in programming. An amount of space or an array at the **bottom** of the memory. So, there is a special pointer called Stack Pointer or SP or ESP or RSP stores the value of the highest filled up point of the stack. So, as new elements are inserted into the stack the pointer moves up i.e decreases and as elements are removed the pointer again lowers or increase in value.
+
+So, next we need to talk about **GOTO** - jumps, branches or calls.
+
+## Example
+
+Ok so let's see an example to make it more clear.
+Let's write an simple program for printing  fibonacci series upto 255 infinite number of terms. 👇
+
+```c
+#include<stdio.h>
+
+int main(int argc, char* argv[]){
+    int x, y, z;
+    while(1){
+        x=0;
+        y=1;
+        do{
+            printf("%d\n", x);
+            z=x+y;
+            x=y;
+            y=z;
+        }while(x<255);
+    }
+    return 0;
+}
+```
+
+So, first compile the file using gcc 👇
+
+```bash
+gcc fib.c -o fib -Wall
+```
+
+So, an executable file **fib** will be created.
+Now, let's get the assembly code out of the *fib* file. So we will use gdb 👇
+
+```bash
+gdb fib.c
+```
+
+It will open a prompt like **(gdb)**. So, we ccan disassemble each function. So, here we have only one function main. So, let's disassemble *main* function. 👇
+
+```bash
+disassemble main
+```
+
+So, you have two styles of dumping assembly language **att** and **intel**.
+You can swap between them and also see you present flavour by using 👇
+
+```bash
+set disassembly-flavor att
+set disassembly-flavor intel
+show disassembly-flavor
+```
+
+So, now after disassembly you will get the assembly code 👇
+
+![Assembly Code](./fibonacci/disassembly_analysis.JPG)
+
+So, the analysis of the code is also shown above.
