@@ -214,3 +214,107 @@ So, now after disassembly you will get the assembly code 👇
 ![Assembly Code](./fibonacci/disassembly_analysis.JPG)
 
 So, the analysis of the code is also shown above.
+Similarly try to analyze the assembly code of the key_cracking program provided in this repo.
+
+So, understand the assembly language you must understand four concepts 👇
+
+- Heap
+- Stack
+- Registers
+- Instructions
+
+### Heap
+
+We can understand heap simply as a place to store data using malloc, calloc. Also the global and the static variables are stored in Heap.
+
+## Registers
+
+These are also storage places in memory and can store address values which are 8 bytes or less.
+In the X86 architecture there are six general purpose registers - **eax, ebx, ecx, edx, esi, edi**.
+There are also three registered special purposse registers - **ebp, esp, eip**. So, we will discuss them a bit later.
+But before let's talk about stack.
+
+## Stack
+
+- Stack are just exactly like the stack data structure. As we know stack has two operations **push** and **pop**. As we know that stack grows from bottom to up. And as we know thaat memory address increase from top to bottom. So we can conclude that stack grows by decreasing address number i.e the newer element will have less address memory number than the old one.
+- Whenever a function is called the function is stored in the stack called as stack frame i.e a part of the stack. IT contains many stack elements which contain all the local variables of the present function.
+- Now let's talk about the special registers. **ebp** is the register which marks the base of the present stack frame. So, it is called the base pointer.
+- **esp** is called the stack pointer and contains the address of the topmost element of the present stack frame. So, as one element is inserted into the stack the *esp* decreases by 1 and if popped then esp increases by 1.
+
+Now let's see that how the stack behaves when a function is called. 👇
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+void func(int x;){
+    int a=0;
+    int b=x;
+}
+void main(){
+    func(10);
+}
+```
+
+So, now let's closely analyze that how the *func* function works 👇
+(Remember that here I will write the numbers as hexadecimal format like 0x4 or 0xff, etc.)
+First of all the argument value of the function is pushed on to the stack. Because you know that registers are not enough to store all the variable's value so memory is to be used. Then the return address is put on the stack. Then the **ebp** is put above the return address stack element and the **esp** is assigned same value to **ebp**. After this as elements are added to the stack the **esp** pointer moves up. This are bwtween the esp and the ebp is called the function's stack frame.These sequence of instructions are called function prologue.
+Ok, so now first the value 0 is pushed in the stack frame as "a" is assigned as 0. So, can you tell the address of the local variable "a"? Yess, it is at address **ebp-0x4**. Its 4 because size of an integer is 4.
+Now in the next step we assign the value of b to the argument value stored outside the present stack frame. Actually we can't copy the value outside this stack frame directly to the stack frame because we knoe that any value in the stack outside the current stack frame is considered junk by the current stack frame. So, here the general purpose registers comes in play. The value of the argument is moved to a general purpose register and then from the register it is copied to the stack frame.
+
+## Assembly Language
+
+Ok now let's analyze the assembly language in deep. So, there are two types of assembly language flavours - **att** and **intel**.
+So, let's for now take intel in our consideration.
+So, an assembly languagecontains insructions. Each instruction has two parts - **operation** and **argument**. An operation can take one or two arguments. If there are two arguments they are seperated by a ",". Like 👉 **operation arg1,arg2**.
+So, let's take example of **mov** instruction. So, move instruction has two arguments. So, here it copies the value fro the lacation mentioned by its second argument to the location mentioned by its first argument.
+Now there is a small twist here. Cosider a stack address of **ebp-0x8**, and we want to copy its value to a register let **eax**. So you can't write like 👇
+
+```assembly
+mov eax, ebx-0x8
+```
+
+Because ebx-0x8 is an address on the stack where the value is stored. So, actually here we have to dereference it just as we did in pointers in C/C++. Only difference is that there you used \* and here you use []. So, the syntax would be 👇
+
+```assembly
+mov eax, [ebx-0x8]
+```
+
+The **add** instruction adds the two arguments and store it in the firts argument.
+
+The **sub** instruction does the same thing as the above only it substracts and add, adds. **arg1-arg2**.
+
+The **push and pop** takes one argument. The **push** decreases the esp by one and places the arg at the position the esp is pointing at. The **pop** takes a register as argument. It copies the value pointed by the esp to the register and then increases the esp by 1.
+
+The **lea** is the Load Effective address. Ti is used to put an address specified by its second argumet to the register specified by its first argument. Example 👇
+
+```assembly
+lea reg, addr
+```
+
+reg and addr will be the name of regster and value of the address respectively.
+
+## Flow
+
+Now let's get into the flow of the program.
+So, every instruction has an instruction address which is the left most column in the assembly code. This is the are in memory where the instruction is stored.
+So, the third special register is the **eip** or the instruction ponter. This contains the address of the instruction to be executed. So, the computer always executed the instruction in the address contained in the instruction pointer.
+Again le's get back to some of the instructions.
+
+## Some more instructions
+
+The **cmp** or the compare instruction is just like compairision in your programs you write. But, here you have to understand that how it works. So, for that you can compare it with the *sub* instruction. So, the second argument is substracted from the first argument (arg1-arg2) and the result is not stored in the first argument as it was in the *sub*. Instead it will set a flag in the processor that contains the value equas to 0, greater than 0 or less than zero. For example if you run **cmp 0x1,0x3**. So, (1-3) is (-2) and therefore <0 will be set in the flag.
+
+The **cmp** instruction is always followed by a jump instruction. The jusmp instruction reacts according to the state of the flag. There are many types of jump instructions - **je (jump if equal to), jne (jump if not equal to), jg (jump if greater than), jl (jump if less than)**. So, if suppose the flag is set to <0 and we use jne then it will execute. If the flag is >0 and we use jl then it will not be executed. Oh we talked about executuion but what is the execution? Actually if the instruction is executed then the eip (instruction pointer) will be set to the argument of the jump instruction which is nothing but an address of an instruction.
+
+The **call** instruction used for calling any function be it user defined or default function. It has one argument like **call func**. It actually does two steps 👇
+
+```assembly
+push eip
+jmp func
+```
+
+So, it pushes the present instruction address onto the stack and then moves the eip to the function address.
+
+The **leave** instruction is called at the end of every function. It actually destroyes the current stack frame by setting the esp=ebp and popping the base pointer of the stack.
+
+The **ret** (or return) instruction always follows the leave instruction. Since the base pointer is popped out of the stack the return address is at the top of the stack. So the return address will be popped out and the eip will be set equal to the return address.
