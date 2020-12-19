@@ -1,3 +1,7 @@
+# A small note before starting
+
+This discussion is mainly realted to debugging and thus I will mostly compile c files for example. Sp the **-g** parameter during compiling of the program is important for debugging. If you miss this option then gdb will not work properly on the binary. Refer the second answer of this [Stackoverflow post](https://stackoverflow.com/questions/9245685/gdb-no-symbol-table-is-loaded).
+
 # Let's Start small
 
 Let's start with a simple C code 👇
@@ -27,7 +31,7 @@ After this you get a executable file. So, now you can execute the file as 👇
 
 ## Avoiding the annoying path
 
-So, here you see that you have to provide the path of the program in the bash. So, that can be avoe=ided if you put the path of this program in the PATH environment variable.
+So, here you see that you have to provide the path of the program in the bash. So, that can be avoided if you put the path of this program in the PATH environment variable.
 That can be easily done like 👇
 
 ```bash
@@ -184,7 +188,7 @@ int main(int argc, char* argv[]){
 So, first compile the file using gcc 👇
 
 ```bash
-gcc fib.c -o fib -Wall
+gcc -g fib.c -o fib -Wall
 ```
 
 So, an executable file **fib** will be created.
