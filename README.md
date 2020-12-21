@@ -322,3 +322,7 @@ So, it pushes the present instruction address onto the stack and then moves the 
 The **leave** instruction is called at the end of every function. It actually destroyes the current stack frame by setting the esp=ebp and popping the base pointer of the stack.
 
 The **ret** (or return) instruction always follows the leave instruction. Since the base pointer is popped out of the stack the return address is at the top of the stack. So the return address will be popped out and the eip will be set equal to the return address.
+
+## An interesting topic
+
+We know that using chmod command we can change the permissions of a file to read(r), write(w) and executable(x). But there is another interesting permission called "s". This allows anybody to run the program with the previlage of the owner of the file. This permission statys in place of the "x" for the owner permissions. This "s" bit can also be set in the group permissions. Thus anybody can run the file with group permission. Learn more about this in this short [video](https://www.youtube.com/watch?v=2gHp_CgUets).
