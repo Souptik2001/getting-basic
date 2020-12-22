@@ -325,4 +325,24 @@ The **ret** (or return) instruction always follows the leave instruction. Since 
 
 ## An interesting topic
 
-We know that using chmod command we can change the permissions of a file to read(r), write(w) and executable(x). But there is another interesting permission called "s". This allows anybody to run the program with the previlage of the owner of the file. This permission statys in place of the "x" for the owner permissions. This "s" bit can also be set in the group permissions. Thus anybody can run the file with group permission. Learn more about this in this short [video](https://www.youtube.com/watch?v=2gHp_CgUets).
+We know that using chmod command we can change the permissions of a file to read(r), write(w) and executable(x). But there is another interesting permission called **"s"**. This allows anybody to run the program with the previlage of the owner of the file. This permission statys in place of the **"x"** for the owner permissions. This **"s"** bit can also be set in the group permissions. Thus anybody can run the file with group permission. Learn more about this in this short [video](https://www.youtube.com/watch?v=2gHp_CgUets).
+
+## Radare2
+
+Radare2 is a great tool for debugging just like gdb. More about this later.
+
+## Starting with protostar
+
+Protostar is a set of exersise to practice memory overflow exploits. So, protostar is available on the [official website]() as an iso file. Which you can then run on a VM. But to increase the performance I prefered to run it on docker. And luckily I found this [github repo]() where he dockerised the image. So, you can either follow their README or you can just build the dockerfile and run the image that's it protostar is ready.
+So, as stated in the official page the exploit excersises are present in /opt/protostar/bin directory.
+And also the source code of the levels are found in that page.
+OK, let's start with level 0.
+**Description of the answers will be written later. For now I am only writting the answers**
+
+### Level 1 (./stack0)
+
+**Answer** - stdin -> AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+### Level 2 (./stack1)
+
+**Answer** - argument -> AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdcba
