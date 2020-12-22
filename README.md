@@ -345,4 +345,10 @@ OK, let's start with level 0.
 
 ### Level 2 (./stack1)
 
-**Answer** - argument -> AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdcba
+**Answer** - argument -> AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdcb
+
+### Level 3 (./stack2)
+
+ Ok! Third level! This problem is absolutely similar to the second problem. The only difference is that here the modified variable will be fetched from the environment variable called 'GREENIE'. Ok so simply we have to set a environment variable named 'GREENIE' and set it to the required value. The value is almost same as the second one only the last four characters change. And that's it. **But there is a small difficulty in setting this last 4 variables**. So, we have to set the modified variable as '0x0d0a0d0a'. So if you analyze it, then you can find that this translates to '\n\r\n\r' .. you can take a reference to the [ascii table](http://www.asciitable.com/). So hwo to write these caracters in the variable. After searching a bit I found these two pages - [stackexchange](https://superuser.com/questions/154936/echo-text-with-new-line-in-bash/154937#:~:text=use%20ctrl%2Dv%20ctrl%2Dm,control%20characters%20into%20the%20terminal.) and [ASCII control codes](https://jkorpela.fi/chars/c0.html) and [stackoverflow](https://stackoverflow.com/questions/9139401/trying-to-embed-newline-in-a-variable-in-bash).
+ So, basically the first link states the you can insert these ascii characters with key combinations after pressing ctrl-v. And the second link is a link of all those key combinations. Ok the /r was done by bya pressing ctrl-m. But there was a problem with /n. So that's why I used the method described in the third link to insert /n.
+ Thus after a half hour of hustling the succes full **answer** came out -> export GREENIE="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"$'\n'"^M"$'\n'"^M"
