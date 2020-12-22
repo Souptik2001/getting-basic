@@ -341,14 +341,30 @@ OK, let's start with level 0.
 
 ### Level 1 (./stack0)
 
-**Answer** - stdin -> AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+Here you get a deeper knowledge about memory structure. Also you will understand some cool techniques of how to debug in gdb.
+Like, you can use **break *address** to put a breakpoint at the address.
+x commands are super useful you can use x commmands to view the memory. More details about x commmands [here](https://visualgdb.com/gdbreference/commands/x).
+You can use **info registers** to view the contents of the registers.
+You can use **define hook-stop** to write some commads which will be automatically executed on breakpoints.
+
+**Answer** - stdin -> *AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA*
 
 ### Level 2 (./stack1)
 
-**Answer** - argument -> AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdcb
+**Answer** - argument -> *AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdcba*
 
 ### Level 3 (./stack2)
 
  Ok! Third level! This problem is absolutely similar to the second problem. The only difference is that here the modified variable will be fetched from the environment variable called 'GREENIE'. Ok so simply we have to set a environment variable named 'GREENIE' and set it to the required value. The value is almost same as the second one only the last four characters change. And that's it. **But there is a small difficulty in setting this last 4 variables**. So, we have to set the modified variable as '0x0d0a0d0a'. So if you analyze it, then you can find that this translates to '\n\r\n\r' .. you can take a reference to the [ascii table](http://www.asciitable.com/). So hwo to write these caracters in the variable. After searching a bit I found these two pages - [stackexchange](https://superuser.com/questions/154936/echo-text-with-new-line-in-bash/154937#:~:text=use%20ctrl%2Dv%20ctrl%2Dm,control%20characters%20into%20the%20terminal.) and [ASCII control codes](https://jkorpela.fi/chars/c0.html) and [stackoverflow](https://stackoverflow.com/questions/9139401/trying-to-embed-newline-in-a-variable-in-bash).
  So, basically the first link states the you can insert these ascii characters with key combinations after pressing ctrl-v. And the second link is a link of all those key combinations. Ok the /r was done by bya pressing ctrl-m. But there was a problem with /n. So that's why I used the method described in the third link to insert /n.
- Thus after a half hour of hustling the succes full **answer** came out -> export GREENIE="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"$'\n'"^M"$'\n'"^M"
+ Thus after a half hour of hustling the succes full **answer** came out ->
+ *export GREENIE="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"$'\n'"^M"$'\n'"^M"*
+
+### Level 4 (./stack3)
+
+In this level we deal with multiple functions. Previously we had only one main function. But now we will have other defined functions also. Like in this challange we have a function called *win*. And actually our main target is to find the address of that functions. If we find the address of that functions then we can easily pass that value to the *fp* functions pointer variable using stack overflow and thus our challange will be solved.
+And we can easily do it with *x* command.
+You can also use the *p* command.
+And that's it we have succesfully found out the address of win function.
+Now let's do the overflow.
+**A small note that the hex values don't correspond to any proper ascii characters. So we use python to create the string. So, here I used python 2 because I was facing some problem with python 3. So, if you have python 2 installed then you can run the ./protostar/stack3/stack3.sh file and then do as it will be directed by that file.**
