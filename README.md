@@ -339,6 +339,37 @@ And also the source code of the levels are found in that page.
 OK, let's start with level 0.
 **Description of the answers will be written later. For now I am only writting the answers**
 
+### Understanding ASLR concept
+
+Understanding ASLR(address space layout randomization) is a bit difficult without knowing anything about registers. But still in simple words I can say that ASLR is a feature provided by OSs to prevent buffer overflow attacks by randomizing the esp varialble everytime of code execution. Specifically you will understand ASLR concept in the stack5 challange as there you have to redirect the code to the esp itself and if you are unsure of the esp then how can you redirect it over there? Yes there are other ways but disabling ASLR makes things quite smooth at the beginning. Take this small example :
+**To enable ASLR :**
+
+```bash
+echo 1 > /proc/sys/kernel/randomize_va_space
+```
+
+Erite this small C code to see the value of *esp*:
+
+```c
+#include <stdio.h>
+void main() {
+        register int i asm("esp");
+        printf("$esp = %#010x\n", i);
+}
+```
+
+Compile and execute. Did you notice that the esp changes everytime you execute the binary? This is due to ASLR.
+Now disable ASLR.
+
+**To disable ASLR :**
+
+```bash
+echo 0 > /proc/sys/kernel/randomize_va_space
+```
+
+And execute, esp stays same right?
+Hopefully you got a brief idea of the ASLR.
+
 ### Level 1 (./stack0)
 
 Here you get a deeper knowledge about memory structure. Also you will understand some cool techniques of how to debug in gdb.
