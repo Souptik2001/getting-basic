@@ -400,7 +400,7 @@ And that's it we have succesfully found out the address of win function.
 Now let's do the overflow.
 **A small note that the hex values don't correspond to any proper ascii characters. So we use python to create the string. So, here I used python 2 because I was facing some problem with python 3. So, if you have python 2 installed then you can run the ./protostar/stack3/stack3.sh file and then do as it will be directed by that file.**
 
-## Level 5 (./stack4)
+### Level 5 (./stack4)
 
 **Stack4 takes a look at overwriting saved EIP and standard buffer overflows.**
 So, actually when we switch to a new function then the address of the next instruction of the parent function is stored in the esp and tnen **ebp is pushed on top of esp** to keep **a reference where the esp is i.e *the return address is***. And then we can freely move the esp and create a stack frame and then when the function execution is done then we just move the **esp to (ebp+0x4)** and then move the eip to that address contained in the esp. And that's it we reach the parent function.
@@ -423,7 +423,7 @@ python exploit.py | ./stack4
 
 ```
 
-## Level 6 (./stack5)
+### Level 6 (./stack5)
 
  So, in the previous challange we set the value of return address to be the address of **win** function but here we are having no such funciton. Rather here we will try to execute our own shell code.So instead of puttting address of any other function in (ebp+0x4) we can put the address of (esp+0x4) and then in the overflow payload we will add the shellcode after that address. So, the program will be redirected to the start of the shell code. So, now our payload looks like this : **padding+eip+shellcode**.
  But if you are in different directory or change your environment variables sometime the address of esp may change thus resulting our exploit to fail as it would not be able to find our shellcode. For this reason we put some NOP(/x90) bytes after the eip and then add the shell code. And then in the eip we just redirect it to (esp+0x4+n) where n is some more value which we can adjust to fit the best.So, NOP code is basically a pass instruction. That is the eip will just flow through the NOPsled.
@@ -462,4 +462,4 @@ Then you will see that nothing shows up. This is because the shell wants some in
 
 So, now the cat takes input from the stdin and pipes it to the dash which then process it and prints it in the stdout.
 
-**Note that you might get segmentation fault or illegal instruction error. For that you have eto play a bit with the eip value and the nopsled value.**
+**Note that you might get segmentation fault or illegal instruction error. For that you have to play a bit with the eip value and the nopsled value.**
