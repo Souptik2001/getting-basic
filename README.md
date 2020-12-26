@@ -543,3 +543,17 @@ print padding+sysAddr+randReturn+bashAddr
 
 And run it with the cat trick and it will run fine.
 **The first benifit is as I told you is that if there is that locking in stack our exploit will not be affected. And the second benifit is that the guessing of the stack address is removed. Here we know solid addresses where we have to redirect our code.**
+
+### Format Level 1 (./format1)
+
+So, here we will be starting with manupulating address with the help of printf. We will use the bugs section of printf to perform this exploit.
+So, before doing this a strong concept of stack structure is extremly important. Also how parameters are passed to functions. So, before calling a function, the parent function puts the address of the parameter to be passed in the esp location. After then when calling the function the return address is pushed on to the stack and after that the stack frame of the child function is formed.
+So basically the stack frame looks like this : parent_stack_frame -> parameters -> return address -> child_stack_frame. Left side is the bottom most i.e the highest address.
+Ok now let's discuss about some important feature of the printf.
+So, we all know the basic function of the printf. But let's pass only a "%x" in the printf. You see a 8-digit number right? And that is the content of the currnt esp. Try more %x and you will get more values. More %x and you are printing more values by going down the stack i.e content of greater addresses. Now at a time you will get "%x" as your output i.e you have reached the address of the stack where your all the %x i.e the argv(s) are present. So, now if you also pass some known characters like "AAAA" then you will also see them printed by the %x. Now stop at a point where you just get the AAAA as the last %x output. Now replace that "AAAA" with the address of the target variable. And now replace the last "%x" with "%n" and that's it you have succesfully changed the target variable to a value of how many %x you printed and the other things you printed.
+If you are wondering what "%n" does, so it is the main power to solve this challange. %n assigns the value of how many characters you have printed to the address provided.
+So, ultimately the exploit is:
+
+```python
+./format1 "`python -c "print 'AAAA'+'\x38\x96\x04\x08'+'BBBB'+' %x '*125+' %n '"`"
+```
