@@ -1,6 +1,6 @@
 # A small note before starting
 
-This discussion is mainly realted to debugging and thus I will mostly compile c files for example. Sp the **-g** parameter during compiling of the program is important for debugging. If you miss this option then gdb will not work properly on the binary. Refer the second answer of this [Stackoverflow post](https://stackoverflow.com/questions/9245685/gdb-no-symbol-table-is-loaded).
+This discussion is mainly realted to debugging and thus I will mostly compile c files for example. So the **-g** parameter during compiling of the program is important for debugging. If you miss this option then gdb will not work properly on the binary. Refer the second answer of this [Stackoverflow post](https://stackoverflow.com/questions/9245685/gdb-no-symbol-table-is-loaded).
 
 # Let's Start small
 
@@ -227,7 +227,7 @@ So, understand the assembly language you must understand four concepts 👇
 - Registers
 - Instructions
 
-### Heap
+## Heap
 
 We can understand heap simply as a place to store data using malloc, calloc. Also the global and the static variables are stored in Heap.
 
@@ -326,6 +326,7 @@ The **ret** (or return) instruction always follows the leave instruction. Since 
 ## An interesting topic
 
 We know that using chmod command we can change the permissions of a file to read(r), write(w) and executable(x). But there is another interesting permission called **"s"**. This allows anybody to run the program with the previlage of the owner of the file. This permission statys in place of the **"x"** for the owner permissions. This **"s"** bit can also be set in the group permissions. Thus anybody can run the file with group permission. Learn more about this in this short [video](https://www.youtube.com/watch?v=2gHp_CgUets).
+TO GET ALL THE FILES WHOSE SETUID BIT IS SET ENTER - `find / -perm +600 2>/dev/null`(this will search starting from /. If you want then you can start from any level in the file system).
 
 ## Radare2
 

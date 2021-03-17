@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  ubuntu32bit:
+    image: i386/ubuntu:latest
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    volumes:
+      - .:/home/
+  

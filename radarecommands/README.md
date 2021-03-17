@@ -30,4 +30,10 @@ Now let's see how to run the program and debug:
 To run the program we can use `ood`. And to run it with an argument we can use `ood argument`.
 Now to set a break point at any address we can run `db address`.
 To directly continue upto the breakpoint enter `dc`.
-To see content of a register type `px @registername` and press enter.
+To see content of a register type ❌`px @registername`❌ `dr?registername` and press enter.
+
+## Changing values
+
+Ok now that we are able to analyze the program properly. Let's learn how to edit the values of registers and memory address.
+Register: To edit register value use `dr registername = 0xvalue`
+Memory : To edit a memory address value use `w text @ 0xaddress`(string) `w \x41\x41\x41\x41 @ 0xaddress`(number).
